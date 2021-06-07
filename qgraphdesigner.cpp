@@ -7,7 +7,7 @@
 QgraphDesigner::QgraphDesigner(QWidget *parent)
     : QWidget(parent)
 {
-    setWindowTitle ("Графы");
+    setWindowTitle ("Graph's");
     setAutoFillBackground(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setFocusPolicy(Qt::StrongFocus);
@@ -62,8 +62,8 @@ void QgraphDesigner::paintEvent(QPaintEvent*)
     QFont font;
     font.setPixelSize(15);
     Painter.setFont(font);
-    QColor* darkGreen = new QColor(255,84,92,50);
-    //paint the outer cercle of all vertecies
+    QColor* darkGreen = new QColor(255,0,0,50);
+    //Красит внешний круг всех вершин
     for(int i = 0 ; i<positions.size() ; i++)
     {
         if(positions[i].x()==Erased)
@@ -73,7 +73,7 @@ void QgraphDesigner::paintEvent(QPaintEvent*)
         Painter.drawEllipse(positions[i],Radius,Radius);
     }
     Painter.setBrush(palette().dark());
-    //paint the inner disc and id number of all verticies
+    //Красит внутренний диск и номера всех вершин
     bool vertexFromThePath=false ;
     for(int i = 0 ; i<positions.size() ; i++)
     {
@@ -97,7 +97,7 @@ void QgraphDesigner::paintEvent(QPaintEvent*)
             vertexFromThePath=false ;
         }
     }
-    //paint activated vertex if there is one
+    //Красит активированную вершину
     if(edgeManager.x()==isActivated)
     {
         Painter.setBrush(palette().window());
@@ -106,14 +106,14 @@ void QgraphDesigner::paintEvent(QPaintEvent*)
         Painter.drawEllipse(positions[edgeManager.y()],Radius - Radius/5,Radius - Radius/5);
         Painter.drawText(positions[edgeManager.y()].x()-Radius, positions[edgeManager.y()].y()-Radius, 2*Radius,2*Radius, Qt::AlignCenter, QString::number(edgeManager.y()));
     }
-    //paint source vertex for a shortest path search if there is one
+    //Красит начальную вершину при поиске кратч. пути
     if((shortestPathManager.x()!=isNotActivated)&&(shortestPathManager.y()==isNotActivated))
     {
         Painter.setBrush(*darkGreen);
         Painter.drawEllipse(positions[shortestPathManager.x()],Radius - Radius/5,Radius - Radius/5);
         Painter.drawText(positions[shortestPathManager.x()].x()-Radius, positions[shortestPathManager.x()].y()-Radius, 2*Radius,2*Radius, Qt::AlignCenter, QString::number(shortestPathManager.x()));
     }
-    //paint edges
+    //Красит края
     QLineF one,tow,three,neoLine,arrowBase;
     QPointF prime;
     bool bothVerticiesAreIn=false,oneVertexIsIn=false;
@@ -176,7 +176,7 @@ void QgraphDesigner::paintEvent(QPaintEvent*)
         }
         oneVertexIsIn=false ;
     }
-        //draw weights
+        //Вывод веса пути
     for(int i = 0 ; i < positions.size() ; i++)
     {
         if(positions[i].x()==Erased){continue;}
@@ -202,21 +202,21 @@ void QgraphDesigner::mousePressEvent(QMouseEvent* event)
         return;
     }
     QRect rect(Margin+Radius, Margin+Radius, width() - 2 * Margin - 2 * Radius, height() - 2 * Margin - 2 * Radius);
-    if (event->button() == Qt::LeftButton) //add a vertex || select a vertex
+    if (event->button() == Qt::LeftButton) //Добавляет вершину || Выберает вершину
     {
         if((shortestPathManager.x()!=isNotActivated)&&(shortestPathManager.y()!=isNotActivated)){drawTheShortestPath->setFocus(); return ;}
-        if (rect.contains(event->pos())) //valid click
+        if (rect.contains(event->pos())) //Выбор
         {
             if(positions.isEmpty())
             {
-                positions.append(event->pos()); //first vertex
+                positions.append(event->pos()); //Первая вершина
             }
             else
             {
                 bool AVertexIsClicked = false ;
                 int theClickedVertex=0;
                 QRect vertexSafeArea ;
-                while(!AVertexIsClicked) //check if the user clicked a vertex
+                while(!AVertexIsClicked) //Проверяет вершину на нажатие
                 {
                     vertexSafeArea.setX( positions[theClickedVertex].x()- 2 * Radius );
                     vertexSafeArea.setY( positions[theClickedVertex].y()- 2 * Radius );
@@ -226,7 +226,7 @@ void QgraphDesigner::mousePressEvent(QMouseEvent* event)
                     theClickedVertex++;
                     if(theClickedVertex==positions.size()){break;}
                 }
-                if(AVertexIsClicked==false) //No vertex clicked -> add a new vertex by saving the click's postion and adding a new empty edge vector in the main edge matrix
+                if(AVertexIsClicked==false)
                 {
                     if(drawTheShortestPath->isChecked()){return;}
                     if(edgeManager.x()==isActivated){return;}
@@ -237,15 +237,15 @@ void QgraphDesigner::mousePressEvent(QMouseEvent* event)
                     weight.insert(positions.size(),vect);
                     angles.insert(positions.size(),vect2);
                 }
-                else // Some vertex was clicked -> activate it if no one else is activated or add an new adge end desactive it if an other vertex is all ready activated
+                else
                 {
-                    vertexSafeArea.setX( positions[theClickedVertex].x()- Radius ); //make the area smaller for optimisation purposes
+                    vertexSafeArea.setX( positions[theClickedVertex].x()- Radius );
                     vertexSafeArea.setY( positions[theClickedVertex].y()- Radius );
                     vertexSafeArea.setWidth(2 * Radius);
                     vertexSafeArea.setHeight(2 * Radius);
                     if(vertexSafeArea.contains(event->pos()))
                     {
-                        if(drawTheShortestPath->isChecked()) //if we are looking for the shortest path handle the shortest path manager
+                        if(drawTheShortestPath->isChecked())
                         {
                             if(shortestPathManager.x()==isNotActivated)
                             {
@@ -263,20 +263,20 @@ void QgraphDesigner::mousePressEvent(QMouseEvent* event)
 
                         }
 
-                        else //else activate the vertex or complete the addition of an edge
+                        else
                         {
-                            if(edgeManager.x()==isNotActivated) //activate the edge
+                            if(edgeManager.x()==isNotActivated) //Выделяет края
                             {
                                 edgeManager.setX(isActivated);
                                 edgeManager.setY(theClickedVertex);
                             }
                             else if(edgeManager.x()==isActivated)
                             {
-                                if(edgeManager.y()==theClickedVertex) //if user click the same vetex twice then deactivate it
+                                if(edgeManager.y()==theClickedVertex) //Если вершина нажата дважды
                                 {
                                     edgeManager.setX(isNotActivated);
                                 }
-                                else //add the edge, its angle and actiate the reader only if it doesn't already existe.
+                                else
                                 {
                                     int k = 0 ; bool theEdgeAllreadyExists =false ;
                                     while(k<matrix[edgeManager.y()].size())
@@ -309,12 +309,12 @@ void QgraphDesigner::mousePressEvent(QMouseEvent* event)
             }
         }
     }
-    else if(event->button() == Qt::RightButton) //erase a vertex
+    else if(event->button() == Qt::RightButton) //Удаляет вершину
     {
         bool AVertexIsClicked = false ;
         int theClickedVertex=0;
         QRect vertexSafeArea ;
-        while(!AVertexIsClicked) //check if some vertex is clicked
+        while(!AVertexIsClicked) //Проверка на нажатые вершины
         {
             vertexSafeArea.setX( positions[theClickedVertex].x()- Radius );
             vertexSafeArea.setY( positions[theClickedVertex].y()- Radius );
@@ -348,7 +348,7 @@ void QgraphDesigner::mouseMoveEvent(QMouseEvent * event)
         bool AVertexIsClicked = false ;
         int theClickedVertex=0;
         QRect vertexSafeArea ;
-        while(!AVertexIsClicked) //check if the user clicked a vertex
+        while(!AVertexIsClicked) //Проверка на нажатые вершины
         {
             vertexSafeArea.setX( positions[theClickedVertex].x()- Radius );
             vertexSafeArea.setY( positions[theClickedVertex].y()- Radius );
@@ -384,7 +384,6 @@ void QgraphDesigner::shortestPath()
     int AdjMat[25][25];
     int p[25][25];
     path.clear();
-    //initialise AdjMat
     for (int i = 0; i < positions.size(); i++)
         for (int j = 0; j < positions.size(); j++)
             AdjMat[i][j] = Infinity;
@@ -400,11 +399,9 @@ void QgraphDesigner::shortestPath()
             AdjMat[i][matrix[i][j]]=weight[i][j];
         }
     }
-    //initialise Parent matrix
     for (int i = 0; i < positions.size(); i++)
         for (int j = 0; j < positions.size(); j++)
             p[i][j] = i;
-    //Floyd_Warshall Algorithm for all pairs shortest paths
     for (int k = 0; k < positions.size(); k++)
     {
         for (int i = 0; i < positions.size(); i++)
@@ -414,7 +411,7 @@ void QgraphDesigner::shortestPath()
                 if (AdjMat[i][k] + AdjMat[k][j] < AdjMat[i][j])
                 {
                     AdjMat[i][j] = AdjMat[i][k] + AdjMat[k][j];
-                    p[i][j] = p[k][j]; // update the parent matrix
+                    p[i][j] = p[k][j];
                 }
             }
         }

@@ -6,7 +6,6 @@
 #include <QMap>
 #include <QVector>
 #include <QLineEdit>
-//class qreal;
 
 class QgraphDesigner : public QWidget
 {
@@ -40,4 +39,4 @@ private:
     QVector<QPointF> positions ;
     QVector<int> path ;
 };
-#endif // QGRAPHDESIGNER_H
+#endif
